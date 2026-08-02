@@ -896,6 +896,12 @@ function humanizePlanKey(value) {
 function queryPlanMarkup(payload) {
   const plan = payload.query_plan || {};
   const filters = Array.isArray(plan.filters) ? plan.filters : [];
+  const scopeOverrides = Array.isArray(payload.scope_overrides)
+    ? payload.scope_overrides
+    : (Array.isArray(plan.scope_overrides) ? plan.scope_overrides : []);
+  const scopeMarkup = scopeOverrides.map(value =>
+    `<span class="query-pill accent">Scope: All ${escapeHtml(humanizePlanKey(value))}${value === 'state' ? 's' : ''}</span>`
+  ).join('');
   const filterMarkup = filters.length
     ? filters.map(item => `<span class="query-pill">${escapeHtml(humanizePlanKey(item.field))} ${escapeHtml(item.operator || 'equals')} ${escapeHtml(item.value ?? '')}</span>`).join('')
     : '<span class="query-pill muted">No extra question filters</span>';
@@ -907,6 +913,7 @@ function queryPlanMarkup(payload) {
         <span class="query-pill">Group by: ${escapeHtml(humanizePlanKey(plan.dimension || 'industry'))}</span>
         ${plan.secondary_dimension ? `<span class="query-pill">Second dimension: ${escapeHtml(humanizePlanKey(plan.secondary_dimension))}</span>` : ''}
         <span class="query-pill">Metric: ${escapeHtml(humanizePlanKey(plan.metric || 'client count'))}</span>
+        ${scopeMarkup}
         ${filterMarkup}
       </div>
     </details>

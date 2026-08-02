@@ -19,7 +19,11 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel, Field
 
 from app.config import get_settings
-from app.query_engine import QueryEngineError, execute_chat_query
+from app.query_engine import (
+    QueryEngineError,
+    effective_dashboard_filters,
+    execute_chat_query,
+)
 
 
 router = APIRouter(tags=["Client Intelligence Dashboard"])
@@ -1199,13 +1203,20 @@ async def dashboard_data(force: bool = Query(default=False)) -> dict[str, Any]:
 async def query_dashboard(request: AskDashboardRequest) -> dict[str, Any]:
     try:
         records, _schema, _schema_source = await get_dashboard_records(force=False)
-        dashboard_filtered = apply_filters(records, request.filters)
-        return await execute_chat_query(
+        effective_filters, scope_overrides = effective_dashboard_filters(
+            request.question.strip(),
+            request.filters,
+        )
+        dashboard_filtered = apply_filters(records, effective_filters)
+        response = await execute_chat_query(
             dashboard_filtered,
             request.question.strip(),
-            dashboard_filters=request.filters,
+            dashboard_filters=effective_filters,
             preview_only=False,
         )
+        response["effective_dashboard_filters"] = effective_filters
+        response["scope_overrides"] = scope_overrides
+        return response
     except QueryEngineError as exc:
         raise HTTPException(400, detail=str(exc)) from exc
     except Exception as exc:
@@ -1216,13 +1227,20 @@ async def query_dashboard(request: AskDashboardRequest) -> dict[str, Any]:
 async def preview_dashboard_query(request: AskDashboardRequest) -> dict[str, Any]:
     try:
         records, _schema, _schema_source = await get_dashboard_records(force=False)
-        dashboard_filtered = apply_filters(records, request.filters)
-        return await execute_chat_query(
+        effective_filters, scope_overrides = effective_dashboard_filters(
+            request.question.strip(),
+            request.filters,
+        )
+        dashboard_filtered = apply_filters(records, effective_filters)
+        response = await execute_chat_query(
             dashboard_filtered,
             request.question.strip(),
-            dashboard_filters=request.filters,
+            dashboard_filters=effective_filters,
             preview_only=True,
         )
+        response["effective_dashboard_filters"] = effective_filters
+        response["scope_overrides"] = scope_overrides
+        return response
     except QueryEngineError as exc:
         raise HTTPException(400, detail=str(exc)) from exc
 

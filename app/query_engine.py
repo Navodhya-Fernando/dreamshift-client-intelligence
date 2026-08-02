@@ -35,7 +35,7 @@ FIELD_SPECS: dict[str, FieldSpec] = {
     "job_function": FieldSpec("job_function", "Job Function", "Job function", aliases=("job function", "function")),
     "current_job_title": FieldSpec("current_job_title", "Current Job Title", "Current job title", aliases=("current job title", "current title")),
     "recent_job_title": FieldSpec("recent_job_title", "Most Recent Job Title", "Most recent job title", aliases=("recent job title", "previous job title", "most recent title")),
-    "visa": FieldSpec("visa", "Visa Category", "Visa category", aliases=("visa", "visa category", "migration status")),
+    "visa": FieldSpec("visa", "Visa Category", "Visa category", aliases=("visa", "visas", "visa type", "visa types", "visa category", "visa categories", "migration status", "subclass")),
     "seniority": FieldSpec("seniority", "Seniority Level", "Seniority", aliases=("seniority", "career level", "senior", "junior", "graduate", "entry level")),
     "qualification": FieldSpec("qualification", "Highest Qualification Level", "Highest qualification", aliases=("qualification", "qualifications", "degree level", "highest degree")),
     "education_institution": FieldSpec("education_institution", "_institutions", "Education institution", multi=True, aliases=("university", "universities", "education institution", "education institutions", "college", "colleges", "alumni")),
@@ -250,8 +250,73 @@ def _phrase_present(question: str, phrase: str) -> bool:
     return p in q
 
 
-def detect_dimension(question: str) -> str | None:
+
+# ---------------------------------------------------------------------------
+# Natural-language query scope handling
+# ---------------------------------------------------------------------------
+
+QUERY_SCOPE_PATTERNS: dict[str, tuple[str, ...]] = {
+    "state": (
+        r"\b(?:for|across|throughout|covering|including)\s+all\s+(?:australian\s+)?states\b",
+        r"\ball\s+(?:australian\s+)?states\b",
+        r"\bacross\s+australia\b",
+        r"\baustralia[- ]wide\b",
+        r"\bnationwide\b",
+        r"\bnationally\b",
+    ),
+    "city": (
+        r"\b(?:for|across|throughout|covering|including)\s+all\s+cities\b",
+        r"\ball\s+cities\b",
+    ),
+    "industry": (
+        r"\b(?:for|across|throughout|covering|including)\s+all\s+(?:industries|sectors)\b",
+        r"\ball\s+(?:industries|sectors)\b",
+    ),
+    "role": (
+        r"\b(?:for|across|throughout|covering|including)\s+all\s+(?:roles|jobs|positions)\b",
+        r"\ball\s+(?:roles|jobs|positions)\b",
+    ),
+    "visa": (
+        r"\b(?:for|across|throughout|covering|including)\s+all\s+(?:visa types|visa categories|visas)\b",
+        r"\ball\s+(?:visa types|visa categories|visas)\b",
+    ),
+}
+
+
+def detect_scope_overrides(question: str) -> list[str]:
     q = norm(question)
+    output: list[str] = []
+    for field_key, patterns in QUERY_SCOPE_PATTERNS.items():
+        if any(re.search(pattern, q, flags=re.I) for pattern in patterns):
+            output.append(field_key)
+    return output
+
+
+def dimension_detection_text(question: str) -> str:
+    # Remove phrases that describe global scope rather than group-by fields.
+    q = norm(question)
+    for patterns in QUERY_SCOPE_PATTERNS.values():
+        for pattern in patterns:
+            q = re.sub(pattern, " ", q, flags=re.I)
+    return clean(q)
+
+
+def effective_dashboard_filters(
+    question: str,
+    dashboard_filters: dict[str, Any] | None,
+) -> tuple[dict[str, Any], list[str]]:
+    # Explicit natural-language scope overrides active dashboard filters.
+    effective = {
+        key: value for key, value in dict(dashboard_filters or {}).items()
+        if value not in (None, "", [])
+    }
+    overrides = detect_scope_overrides(question)
+    for field_key in overrides:
+        effective.pop(field_key, None)
+    return effective, overrides
+
+def detect_dimension(question: str) -> str | None:
+    q = dimension_detection_text(question)
     # More specific phrases must win over general words like "institution".
     priority = [
         "certificate_institution", "certification", "education_institution",
@@ -262,6 +327,14 @@ def detect_dimension(question: str) -> str | None:
         "seniority", "industry", "role", "state", "city", "visa", "tool", "skill",
         "leadership", "career_change", "extraction_status",
     ]
+    by_parts = re.split(r"\bby\b", q, maxsplit=1)
+    if len(by_parts) == 2:
+        left_side = by_parts[0]
+        for key in priority:
+            spec = FIELD_SPECS[key]
+            if any(_phrase_present(left_side, alias) for alias in spec.aliases):
+                return key
+
     for key in priority:
         spec = FIELD_SPECS[key]
         if any(_phrase_present(q, alias) for alias in spec.aliases):
@@ -270,7 +343,14 @@ def detect_dimension(question: str) -> str | None:
 
 
 def detect_secondary_dimension(question: str, primary: str | None) -> str | None:
-    q = norm(question)
+    q = dimension_detection_text(question)
+    by_parts = re.split(r"\bby\b", q, maxsplit=1)
+    if len(by_parts) == 2:
+        right_side = by_parts[1]
+        for key, spec in FIELD_SPECS.items():
+            if key != primary and any(_phrase_present(right_side, alias) for alias in spec.aliases):
+                return key
+
     found: list[str] = []
     for key, spec in FIELD_SPECS.items():
         if key == primary:
@@ -363,6 +443,7 @@ def infer_compare_values(question: str, dimension: str | None, catalogs: dict[st
 
 def deterministic_plan(question: str, records: list[dict[str, Any]]) -> dict[str, Any]:
     catalogs = build_catalogs(records)
+    scope_overrides = detect_scope_overrides(question)
     primary = detect_dimension(question)
     secondary = detect_secondary_dimension(question, primary)
     intent = detect_intent(question, primary)
@@ -427,6 +508,7 @@ def deterministic_plan(question: str, records: list[dict[str, Any]]) -> dict[str
         "limit": limit,
         "chart": chart,
         "source": "deterministic",
+        "scope_overrides": scope_overrides,
         "interpretation": f"{intent} by {FIELD_SPECS[primary].label}",
     }
 
@@ -459,6 +541,10 @@ def validate_plan(plan: dict[str, Any]) -> dict[str, Any]:
         clean_filters.append({"field": field, "operator": operator, "value": item.get("value")})
     output["filters"] = clean_filters[:8]
 
+    output["scope_overrides"] = [
+        value for value in unique(output.get("scope_overrides") or [])
+        if value in FIELD_SPECS
+    ][:8]
     output["compare_values"] = unique(output.get("compare_values") or [])[:4]
     output["limit"] = max(1, min(int(output.get("limit") or 10), 25))
     chart = str(output.get("chart") or "horizontal_bar")
@@ -492,6 +578,10 @@ async def llm_plan(question: str, records: list[dict[str, Any]], deterministic: 
         "Valid filter operators: equals, contains, contains_any, greater_than, less_than, between, is_blank, is_not_blank. "
         "For 'certificate institutions/providers' use certificate_institution. For universities or colleges use education_institution. "
         "For common IT certifications, use dimension certification and filter industry equals Information Technology. "
+        "Phrases such as all states, across all states, nationwide or Australia-wide describe query scope: "
+        "they remove an active state filter and must not make state the primary dimension. "
+        "Only choose state as a dimension when the user explicitly asks for a state ranking, a breakdown by state, "
+        "state-by-state results, or a comparison between states. "
         "Never invent a field. If the deterministic plan is already correct, preserve it."
     )
     user = json.dumps({
@@ -707,7 +797,7 @@ def chart_from_result(plan: dict[str, Any], result: dict[str, Any]) -> dict[str,
         return {
             "type": "bar",
             "orientation": "horizontal",
-            "title": f"Top {spec.label.lower()}s",
+            "title": f"Top {plural_label(spec.label)}",
             "categories": [row["label"] for row in rows],
             "series": [{"name": "Clients", "data": [row["count"] for row in rows]}],
             "meta": {"percentage_denominator": result.get("denominator"), "coverage_percentage": result.get("coverage_percentage")},
@@ -742,7 +832,23 @@ def deterministic_response(question: str, plan: dict[str, Any], result: dict[str
     spec = FIELD_SPECS[plan["dimension"]]
     filters = plan.get("filters") or []
     filter_text = ", ".join(f"{FIELD_SPECS[item['field']].label} = {item.get('value')}" for item in filters)
-    scope_text = f" after applying {filter_text}" if filter_text else ""
+    scope_overrides = plan.get("scope_overrides") or []
+    scope_labels = {
+        "state": "all Australian states",
+        "city": "all cities",
+        "industry": "all industries",
+        "role": "all target roles",
+        "visa": "all visa categories",
+    }
+    global_scope = ", ".join(scope_labels[value] for value in scope_overrides if value in scope_labels)
+    if filter_text and global_scope:
+        scope_text = f" after applying {filter_text}, across {global_scope}"
+    elif filter_text:
+        scope_text = f" after applying {filter_text}"
+    elif global_scope:
+        scope_text = f" across {global_scope}"
+    else:
+        scope_text = ""
     findings: list[str] = []
     answer = ""
     pitch = ""
