@@ -26,3 +26,7 @@ backup_before_*
 .vscode/
 .idea/
 .DS_Store
+
+# Vercel local state and generated CDN assets
+.vercel/
+public/static/
