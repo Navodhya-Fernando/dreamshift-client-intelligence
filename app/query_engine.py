@@ -384,7 +384,7 @@ def _match_catalog_value(question: str, field_key: str, catalogs: dict[str, list
     values = sorted(catalogs.get(field_key, []), key=lambda x: len(norm(x)), reverse=True)
     for value in values:
         token = norm(value)
-        if token and token in q:
+        if token and _phrase_present(q, token):
             return value
     return None
 
@@ -433,13 +433,62 @@ def infer_compare_values(question: str, dimension: str | None, catalogs: dict[st
     q = norm(question)
     values: list[str] = []
     for value in sorted(catalogs.get(dimension, []), key=lambda x: len(norm(x)), reverse=True):
-        if norm(value) in q:
+        if _phrase_present(q, value):
             values.append(value)
     for phrase, (field_key, canonical) in VALUE_ALIASES.items():
         if field_key == dimension and _phrase_present(q, phrase):
             values.append(canonical)
     return unique(values)[:4]
 
+
+
+def explicitly_mentioned_states(question: str) -> set[str]:
+    """Return only state values explicitly written as complete tokens."""
+
+    mentioned: set[str] = set()
+    for phrase, canonical in STATE_ALIASES.items():
+        if _phrase_present(question, phrase):
+            mentioned.add(canonical)
+    return mentioned
+
+
+def enforce_state_filter_boundaries(question: str, plan: dict[str, Any]) -> dict[str, Any]:
+    """Remove state filters inferred from letter sequences inside other words.
+
+    Examples that must not create state filters:
+      * visa     -> does not mean SA
+      * clients  -> does not mean NT
+      * fantastic -> does not mean TAS
+      * service   -> does not mean VIC
+      * answers   -> does not mean NSW
+      * always    -> does not mean WA
+      * action    -> does not mean ACT
+
+    Explicit references such as SA, NT, Victoria or Canberra remain valid.
+    """
+
+    output = dict(plan)
+    allowed_states = explicitly_mentioned_states(question)
+    clean_filters: list[dict[str, Any]] = []
+
+    for item in output.get("filters") or []:
+        if not isinstance(item, dict) or item.get("field") != "state":
+            clean_filters.append(item)
+            continue
+
+        raw_value = norm(item.get("value"))
+        canonical = STATE_ALIASES.get(raw_value)
+        if canonical is None:
+            upper_value = clean(item.get("value")).upper()
+            canonical = upper_value if upper_value in set(STATE_ALIASES.values()) else None
+
+        if canonical and canonical in allowed_states:
+            guarded = dict(item)
+            guarded["value"] = canonical
+            clean_filters.append(guarded)
+
+    output["filters"] = clean_filters
+    return output
 
 def deterministic_plan(question: str, records: list[dict[str, Any]]) -> dict[str, Any]:
     catalogs = build_catalogs(records)
@@ -982,6 +1031,7 @@ async def execute_chat_query(records: list[dict[str, Any]], question: str, dashb
     deterministic = validate_plan(deterministic_plan(question, records))
     plan, planner_model = await llm_plan(question, records, deterministic)
     plan = validate_plan(plan)
+    plan = enforce_state_filter_boundaries(question, plan)
     if preview_only:
         return {"question": question, "query_plan": plan, "planner_model": planner_model, "record_count": len(records)}
 
