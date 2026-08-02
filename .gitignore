@@ -1,6 +1,28 @@
+# Environment and secrets
 .env
+.env.*
+!.env.example
+
+# Virtual environments
 .venv/
+venv/
+
+# Python
 __pycache__/
 *.py[cod]
+.pytest_cache/
+
+# Logs and temporary files
 *.log
+*.tmp
+
+# Dashboard patch installers and backups
+apply_*_patch.py
+apply_*_patch.py.sha256
+.patch_backups/
+backup_before_*
+
+# IDE and operating system
+.vscode/
+.idea/
 .DS_Store
