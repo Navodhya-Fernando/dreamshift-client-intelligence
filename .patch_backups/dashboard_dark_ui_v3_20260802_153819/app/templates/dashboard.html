@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#24101a">
+  <title>DreamShift Intelligence</title>
+  <link rel="stylesheet" href="/static/dashboard.css?v=2.0.0">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <img src="/static/dreamshift-logo.png" alt="DreamShift">
+        <div><strong>DreamShift</strong><span>Client Intelligence</span></div>
+      </div>
+      <nav class="nav" aria-label="Dashboard sections">
+        <button class="nav-item active" data-tab="overview"><span>⌂</span> Executive overview</button>
+        <button class="nav-item" data-tab="market"><span>◫</span> Market intelligence</button>
+        <button class="nav-item" data-tab="education"><span>◇</span> Education footprint</button>
+        <button class="nav-item" data-tab="certifications"><span>✓</span> Certifications</button>
+        <button class="nav-item" data-tab="data"><span>⌘</span> Data coverage</button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="live-pill"><i></i><span id="sidebarLive">Connected to Airtable</span></div>
+        <small id="lastSynced">Waiting for first sync…</small>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
+        <div>
+          <p class="breadcrumb">DREAMSHIFT / CLIENT PORTFOLIO</p>
+          <h1 id="pageTitle">Executive overview</h1>
+        </div>
+        <div class="actions">
+          <button class="icon-button" id="copySummaryButton" title="Copy pitch summary">⧉</button>
+          <button class="refresh-button" id="refreshButton"><span>↻</span> Refresh data</button>
+          <button class="ask-button" id="askLauncher"><span class="spark">✦</span> Ask Intelligence</button>
+        </div>
+      </header>
+
+      <section class="filter-shell">
+        <div class="filter-heading">
+          <div><span class="filter-kicker">LIVE SEGMENT</span><strong id="filteredCountLabel">All clients</strong></div>
+          <button id="resetFiltersButton">Clear all filters</button>
+        </div>
+        <div class="filters">
+          <label><span>State</span><select id="filterState"></select></label>
+          <label><span>Industry</span><select id="filterIndustry"></select></label>
+          <label><span>Role family</span><select id="filterRoleFamily"></select></label>
+          <label><span>Visa</span><select id="filterVisa"></select></label>
+          <label><span>Seniority</span><select id="filterSeniority"></select></label>
+          <label><span>Qualification</span><select id="filterQualification"></select></label>
+          <label><span>Added from</span><input id="filterDateFrom" type="date"></label>
+          <label><span>Added to</span><input id="filterDateTo" type="date"></label>
+        </div>
+      </section>
+
+      <section class="tab-panel active" data-panel="overview">
+        <div class="hero">
+          <div class="hero-copy">
+            <span class="hero-label">LIVE CLIENT PORTFOLIO</span>
+            <h2>Turn client data into <em>credible business proof.</em></h2>
+            <p>Explore who DreamShift serves across Australia, uncover high-value market segments and create evidence-led insights for campaigns, partnerships and pitch decks.</p>
+            <div class="hero-meta">
+              <span><i></i> Live Airtable connection</span>
+              <span>Privacy-safe aggregate analytics</span>
+            </div>
+          </div>
+          <div class="hero-orbit" aria-hidden="true">
+            <div class="orbit orbit-1"></div><div class="orbit orbit-2"></div>
+            <img src="/static/dreamshift-logo.png" alt="">
+          </div>
+        </div>
+
+        <div id="overviewKpis" class="kpi-grid"></div>
+
+        <div class="grid two-thirds">
+          <article class="card map-card">
+            <div class="card-head">
+              <div><span class="overline">GEOGRAPHIC REACH</span><h3>Clients across Australia</h3></div>
+              <span class="context-chip" id="mapContext">All clients</span>
+            </div>
+            <div class="map-layout">
+              <div class="australia-map" id="australiaMap" aria-label="Interactive map of Australian states"></div>
+              <div class="state-ranking" id="stateRanking"></div>
+            </div>
+          </article>
+          <article class="card">
+            <div class="card-head">
+              <div><span class="overline">CLIENT MIX</span><h3>Top industries</h3></div>
+              <span class="context-chip">Top 10</span>
+            </div>
+            <div id="industryChart" class="interactive-chart"></div>
+          </article>
+        </div>
+
+        <div class="grid halves">
+          <article class="card">
+            <div class="card-head"><div><span class="overline">CAREER DEMAND</span><h3>Most-targeted roles</h3></div><span class="context-chip">Top 10</span></div>
+            <div id="roleChart" class="interactive-chart"></div>
+          </article>
+          <article class="card insight-card">
+            <div class="card-head"><div><span class="overline">EXECUTIVE NARRATIVE</span><h3>What the data says</h3></div><span class="ai-badge">✦ Smart insight</span></div>
+            <div id="executiveInsight"></div>
+          </article>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="market">
+        <div class="section-intro"><div><span class="overline">MARKET INTELLIGENCE</span><h2>Understand the professionals DreamShift supports.</h2></div><p>Use these views to plan campaigns, specialist content, partnerships and service capacity.</p></div>
+        <div id="marketKpis" class="kpi-grid compact"></div>
+        <div class="grid halves">
+          <article class="card"><div class="card-head"><div><span class="overline">ROLE PORTFOLIO</span><h3>Role families</h3></div></div><div id="roleFamilyChart" class="interactive-chart"></div></article>
+          <article class="card"><div class="card-head"><div><span class="overline">EXPERIENCE</span><h3>Career stage distribution</h3></div></div><div id="experienceChart" class="donut-layout"></div></article>
+          <article class="card"><div class="card-head"><div><span class="overline">MIGRATION PROFILE</span><h3>Visa categories</h3></div></div><div id="visaChart" class="interactive-chart"></div></article>
+          <article class="card"><div class="card-head"><div><span class="overline">SENIORITY</span><h3>Seniority mix</h3></div></div><div id="seniorityChart" class="interactive-chart"></div></article>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="education">
+        <div class="section-intro"><div><span class="overline">EDUCATION FOOTPRINT</span><h2>Showcase the breadth of DreamShift's graduate network.</h2></div><p>Institutions are combined across PhD, master's, bachelor's and other qualifications, with duplicates removed per client.</p></div>
+        <div id="educationKpis" class="kpi-grid compact"></div>
+        <div class="grid halves">
+          <article class="card"><div class="card-head"><div><span class="overline">INSTITUTION REACH</span><h3>Top education institutions</h3></div><span class="context-chip">Top 12</span></div><div id="universityChart" class="interactive-chart"></div></article>
+          <article class="card"><div class="card-head"><div><span class="overline">QUALIFICATION MIX</span><h3>Highest qualifications</h3></div></div><div id="qualificationChart" class="interactive-chart"></div></article>
+          <article class="card"><div class="card-head"><div><span class="overline">GLOBAL EDUCATION</span><h3>Countries of education</h3></div></div><div id="educationCountryChart" class="interactive-chart"></div></article>
+          <article class="card insight-card"><div class="card-head"><div><span class="overline">PITCH-DECK PROOF</span><h3>Education narrative</h3></div></div><div id="educationInsight"></div></article>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="certifications">
+        <div class="section-intro"><div><span class="overline">CERTIFICATION INTELLIGENCE</span><h2>Separate career credentials from general compliance cards.</h2></div><p>Aliases are normalised, percentages use the currently filtered client segment and each client is counted once per certification.</p></div>
+        <div id="certKpis" class="kpi-grid compact"></div>
+        <div class="grid halves">
+          <article class="card"><div class="card-head"><div><span class="overline">CAREER-RELEVANT</span><h3>Professional certifications</h3></div><span class="context-chip">Normalised</span></div><div id="professionalCertChart" class="interactive-chart"></div></article>
+          <article class="card"><div class="card-head"><div><span class="overline">GENERAL COMPLIANCE</span><h3>Cards, checks and licences</h3></div></div><div id="complianceCertChart" class="interactive-chart"></div></article>
+          <article class="card wide"><div class="card-head"><div><span class="overline">ROLE ALIGNMENT</span><h3>Certification signals by target role</h3></div></div><div id="certRoleMatrix" class="matrix-wrap"></div></article>
+        </div>
+      </section>
+
+      <section class="tab-panel" data-panel="data">
+        <div class="section-intro"><div><span class="overline">DATA COVERAGE</span><h2>Know what the dashboard can—and cannot—claim.</h2></div><p>This internal view checks Airtable fields, population rates and analytical readiness.</p></div>
+        <article class="card">
+          <div class="card-head"><div><span class="overline">FIELD DICTIONARY</span><h3>Available Airtable columns</h3></div><input class="search" id="fieldSearch" placeholder="Search fields…"></div>
+          <div id="dataOverview" class="data-overview"></div>
+          <div id="fieldGroups" class="field-groups"></div>
+        </article>
+      </section>
+
+      <footer><span>DreamShift Client Intelligence</span><span id="dataSourceNote">Read-only Airtable analytics</span></footer>
+    </main>
+  </div>
+
+  <button class="floating-ask" id="floatingAsk" aria-label="Ask Client Intelligence">✦</button>
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <aside class="ask-drawer" id="askDrawer" aria-hidden="true">
+    <div class="ask-head">
+      <div class="ask-brand"><img src="/static/dreamshift-logo.png" alt=""><div><span>AI ANALYST</span><strong>Ask Client Intelligence</strong></div></div>
+      <button id="closeAskButton" aria-label="Close">×</button>
+    </div>
+    <div class="ask-context"><i></i><span id="askScope">Analysing all visible clients</span></div>
+    <div class="suggestion-list" id="questionSuggestions">
+      <button>Which IT certifications are genuinely career-relevant?</button>
+      <button>Compare Software Engineering and Business Analysis clients.</button>
+      <button>Which client segment should our next campaign target?</button>
+      <button>Write a pitch-deck statement about our Australian reach.</button>
+    </div>
+    <div class="chat-thread" id="chatThread">
+      <div class="chat-message assistant"><strong>Welcome.</strong><p>I use only privacy-safe aggregate Airtable data. Ask for comparisons, gaps, campaign opportunities or pitch-ready proof.</p></div>
+    </div>
+    <form class="ask-form" id="askForm">
+      <textarea id="askInput" maxlength="800" rows="3" placeholder="Ask a question about DreamShift's client portfolio…"></textarea>
+      <div><span>Counts and percentages are grounded in the active filters.</span><button id="askSubmit" type="submit">Analyse <b>→</b></button></div>
+    </form>
+  </aside>
+  <div class="toast" id="toast"></div>
+  <script src="/static/dashboard.js?v=2.0.0" defer></script>
+</body>
+</html>

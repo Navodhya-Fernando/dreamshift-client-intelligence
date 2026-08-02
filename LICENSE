@@ -1,0 +1,137 @@
+DREAMSHIFT CLIENT INTELLIGENCE DASHBOARD
+PROPRIETARY SOFTWARE LICENSE
+
+Copyright © 2026 Navodhya Fernando. All Rights Reserved.
+
+1. OWNERSHIP
+
+The DreamShift Client Intelligence Dashboard, including its source code,
+documentation, user-interface designs, data models, query-engine logic,
+analytical methods, prompts, scripts, diagrams, visual assets and related
+materials (collectively, the "Software"), is proprietary software owned by
+Navodhya Fernando, except for third-party components identified below.
+
+All rights, title and interest in and to the Software are reserved.
+
+2. NO GENERAL LICENSE GRANT
+
+No licence or permission is granted to any person or organisation to use,
+copy, reproduce, modify, adapt, translate, merge, publish, display,
+distribute, sublicense, sell, rent, lease, host, commercialise,
+reverse-engineer, decompile, disassemble or create derivative works from the
+Software without prior written authorisation from the copyright owner.
+
+Possession of a copy of the Software does not transfer ownership or grant an
+implied licence.
+
+3. AUTHORISED INTERNAL USE
+
+Where the copyright owner has expressly provided the Software to DreamShift
+or another authorised party for internal operational use, that party may use
+the Software only:
+
+a. for the purpose expressly approved by the copyright owner;
+b. within systems and accounts controlled by the authorised party;
+c. without distributing the Software or granting access to unauthorised
+   third parties; and
+d. subject to any additional written agreement between the parties.
+
+No right to resell, sublicense, publish or commercially distribute the
+Software is included.
+
+4. RESTRICTIONS
+
+Without prior written authorisation, users must not:
+
+a. remove or alter copyright, ownership or attribution notices;
+b. expose source code, credentials, private prompts or internal
+   documentation to unauthorised parties;
+c. use the Software to build or operate a competing product or service;
+d. copy the visual design, query-engine logic, analytical workflows or
+   proprietary data structures for another product;
+e. upload, publish or distribute the Software through a public repository,
+   package registry, file-sharing platform or marketplace;
+f. use DreamShift client data outside the authorised business purpose;
+g. attempt to bypass provider limits, security controls or access
+   restrictions; or
+h. represent the Software as their own work.
+
+5. CLIENT DATA AND CONFIDENTIALITY
+
+The Software may process confidential or personal information relating to
+DreamShift clients.
+
+Any authorised user is responsible for:
+
+a. protecting Airtable Personal Access Tokens, Groq API keys and other
+   credentials;
+b. limiting data access to authorised personnel;
+c. complying with applicable privacy, confidentiality and data-protection
+   obligations;
+d. preventing client names, contact information, CV text and other direct
+   identifiers from being disclosed unnecessarily; and
+e. maintaining appropriate access controls for the dashboard.
+
+No ownership of DreamShift client data is transferred under this licence.
+
+6. THIRD-PARTY COMPONENTS
+
+The Software may depend on third-party libraries, services, fonts, APIs or
+platforms, including but not limited to FastAPI, Uvicorn, Pydantic, HTTPX,
+python-dotenv, Airtable, Groq, ApexCharts and Google Fonts.
+
+Those third-party components remain subject to their respective licences,
+terms of service and usage policies. This proprietary licence applies only
+to the original Software and materials owned by the copyright owner.
+
+7. BRAND AND TRADEMARKS
+
+The DreamShift name, logo, brand identity and related marks may be used only
+for authorised DreamShift purposes.
+
+No right is granted to use, reproduce or register any DreamShift name, logo,
+trademark, domain, visual identity or confusingly similar mark without
+written permission from the relevant owner.
+
+8. NO WARRANTY
+
+THE SOFTWARE IS PROVIDED "AS IS" AND "AS AVAILABLE", WITHOUT WARRANTIES OF
+ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, ACCURACY, RELIABILITY,
+NON-INFRINGEMENT, AVAILABILITY OR ERROR-FREE OPERATION.
+
+Analytical outputs, percentages, rankings, charts, AI-generated
+explanations and business recommendations depend on the quality,
+completeness and currency of the source data. They must be reviewed before
+being used in public claims, marketing materials, partnerships or business
+decisions.
+
+9. LIMITATION OF LIABILITY
+
+TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE COPYRIGHT OWNER SHALL NOT BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL,
+EXEMPLARY OR PUNITIVE LOSS OR DAMAGE ARISING FROM OR RELATING TO THE
+SOFTWARE, INCLUDING LOSS OF DATA, REVENUE, PROFITS, BUSINESS OPPORTUNITY,
+GOODWILL OR SERVICE AVAILABILITY.
+
+10. TERMINATION
+
+Any permission to use the Software terminates immediately if the authorised
+party breaches this licence or any related written agreement.
+
+Upon termination, the party must stop using the Software and, when requested,
+delete or return all copies under its control, except where retention is
+required by law.
+
+11. WRITTEN AUTHORISATION
+
+Any licence, transfer, commercial use, external deployment, publication or
+distribution must be approved through a separate written agreement signed
+or expressly confirmed by the copyright owner.
+
+12. RESERVATION OF RIGHTS
+
+All rights not expressly granted in writing are reserved.
+
+For licensing or written authorisation, contact the copyright owner through
+an authorised DreamShift communication channel.
