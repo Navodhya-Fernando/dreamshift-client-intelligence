@@ -1103,3 +1103,129 @@ bootstrap().catch((error) => {
   console.error(error);
   document.body.insertAdjacentHTML('afterbegin', `<div style="padding:16px; color:#fff; background:#8b1e4d;">Failed to load dashboard: ${escapeHtml(error.message || String(error))}</div>`);
 });
+
+/* ==========================================================================
+   DreamShift Mobile UX V4
+   ========================================================================== */
+(() => {
+  const mobileBreakpoint = 760;
+  const isMobile = () => window.matchMedia(`(max-width: ${mobileBreakpoint}px)`).matches;
+  const sidebar = qs('.sidebar');
+  const sidebarBackdrop = el('mobileSidebarBackdrop');
+  const menuButton = el('mobileMenuBtn');
+  const mobileChatButton = el('mobileChatBtn');
+
+  function setBodyLock() {
+    const drawerOpen = Boolean(qs('.drawer.open'));
+    const menuOpen = Boolean(sidebar?.classList.contains('open'));
+    document.body.classList.toggle('drawer-open', drawerOpen);
+    document.body.classList.toggle('mobile-menu-open', menuOpen);
+    sidebarBackdrop?.classList.toggle('open', menuOpen);
+    sidebarBackdrop?.setAttribute('aria-hidden', menuOpen ? 'false' : 'true');
+    menuButton?.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
+  }
+
+  function closeMobileSidebar() {
+    sidebar?.classList.remove('open');
+    setBodyLock();
+  }
+
+  const originalOpenDrawer = openDrawer;
+  openDrawer = function mobileAwareOpenDrawer(id) {
+    originalOpenDrawer(id);
+    closeMobileSidebar();
+    setBodyLock();
+  };
+
+  const originalCloseDrawer = closeDrawer;
+  closeDrawer = function mobileAwareCloseDrawer(id) {
+    originalCloseDrawer(id);
+    setBodyLock();
+  };
+
+  const originalSetView = setView;
+  setView = function mobileAwareSetView(view) {
+    originalSetView(view);
+    qsa('.mobile-nav-link').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.view === view);
+    });
+    closeMobileSidebar();
+    if (isMobile()) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  /* Add responsive ApexCharts defaults without changing individual charts. */
+  const originalChartTheme = chartTheme;
+  chartTheme = function mobileAwareChartTheme() {
+    const theme = originalChartTheme();
+    return {
+      ...theme,
+      responsive: [
+        {
+          breakpoint: 760,
+          options: {
+            chart: {
+              toolbar: { show: false },
+              animations: { speed: 360 },
+            },
+            dataLabels: { enabled: false },
+            legend: {
+              position: 'bottom',
+              fontSize: '10px',
+              itemMargin: { horizontal: 6, vertical: 4 },
+            },
+            xaxis: {
+              labels: {
+                rotate: -35,
+                trim: true,
+                style: { fontSize: '10px' },
+              },
+            },
+            yaxis: {
+              labels: {
+                maxWidth: 118,
+                style: { fontSize: '10px' },
+              },
+            },
+          },
+        },
+      ],
+    };
+  };
+
+  menuButton?.setAttribute('aria-expanded', 'false');
+  menuButton?.addEventListener('click', () => requestAnimationFrame(setBodyLock));
+  sidebarBackdrop?.addEventListener('click', closeMobileSidebar);
+  mobileChatButton?.addEventListener('click', () => openDrawer('chatDrawer'));
+
+  qsa('.side-nav .nav-item').forEach(btn => {
+    btn.addEventListener('click', closeMobileSidebar);
+  });
+
+  qsa('[data-close-chat], [data-close-drawer]').forEach(btn => {
+    btn.addEventListener('click', () => requestAnimationFrame(setBodyLock));
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key !== 'Escape') return;
+    qsa('.drawer.open').forEach(drawer => drawer.classList.remove('open'));
+    closeMobileSidebar();
+    setBodyLock();
+  });
+
+  window.addEventListener('resize', () => {
+    if (!isMobile()) {
+      closeMobileSidebar();
+    }
+  });
+
+  /* Improve mobile keyboard behaviour in the chatbot. */
+  const chatInput = el('chatInput');
+  chatInput?.addEventListener('focus', () => {
+    if (!isMobile()) return;
+    setTimeout(() => chatInput.scrollIntoView({ block: 'center', behavior: 'smooth' }), 280);
+  });
+
+  setBodyLock();
+})();

@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>DreamShift Client Intelligence</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=20260802c" />
+  <link rel="stylesheet" href="/static/styles.css?v=20260802-mobile-v4" />
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
@@ -256,6 +256,32 @@
     </div>
   </div>
 
-  <script src="/static/app.js?v=20260802c"></script>
+
+  <div id="mobileSidebarBackdrop" class="mobile-sidebar-backdrop" aria-hidden="true"></div>
+
+  <nav class="mobile-bottom-nav glass" aria-label="Mobile dashboard navigation">
+    <button class="nav-item mobile-nav-link active" data-view="overview" aria-label="Overview">
+      <span class="mobile-nav-icon">◈</span>
+      <span>Overview</span>
+    </button>
+    <button class="nav-item mobile-nav-link" data-view="market" aria-label="Client Market">
+      <span class="mobile-nav-icon">◎</span>
+      <span>Market</span>
+    </button>
+    <button id="mobileChatBtn" class="mobile-ai-button" aria-label="Ask Client Intelligence">
+      <span>✦</span>
+      <small>Ask</small>
+    </button>
+    <button class="nav-item mobile-nav-link" data-view="education" aria-label="Education">
+      <span class="mobile-nav-icon">◉</span>
+      <span>Education</span>
+    </button>
+    <button class="nav-item mobile-nav-link" data-view="roles" aria-label="Roles and Skills">
+      <span class="mobile-nav-icon">✦</span>
+      <span>Roles</span>
+    </button>
+  </nav>
+
+  <script src="/static/app.js?v=20260802-mobile-v4"></script>
 </body>
 </html>

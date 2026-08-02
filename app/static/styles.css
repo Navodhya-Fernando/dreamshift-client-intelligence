@@ -485,3 +485,743 @@ select option { color:#111; }
 .query-findings { margin-top: 12px; }
 .query-findings li { margin-bottom: 6px; }
 .query-data-note { margin-top: 12px; color: rgba(255,255,255,.5); font-size: .78rem; line-height: 1.6; }
+
+/* ==========================================================================
+   DreamShift Mobile UX V4
+   Mobile-first overrides for phones, compact tablets and touch interaction.
+   ========================================================================== */
+
+.mobile-bottom-nav,
+.mobile-sidebar-backdrop {
+  display: none;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body.drawer-open,
+body.mobile-menu-open {
+  overflow: hidden;
+}
+
+button,
+select,
+input,
+textarea {
+  touch-action: manipulation;
+}
+
+button:focus-visible,
+select:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(246,185,0,.35);
+  outline-offset: 2px;
+}
+
+/* Tablets and small laptops */
+@media (max-width: 1100px) {
+  .app-shell {
+    padding: 12px;
+    gap: 14px;
+  }
+
+  .main-area {
+    gap: 14px;
+  }
+
+  .sidebar {
+    top: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: min(326px, calc(100vw - 24px));
+    height: calc(100vh - 24px);
+    height: calc(100dvh - 24px);
+    z-index: 80;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .mobile-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgba(5,2,6,.68);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .22s ease;
+  }
+
+  .mobile-sidebar-backdrop.open {
+    display: block;
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 8px;
+    z-index: 40;
+  }
+
+  .content-grid.two-col,
+  .content-grid.three-col {
+    grid-template-columns: 1fr;
+  }
+
+  .au-layout {
+    grid-template-columns: minmax(0,1.15fr) minmax(240px,.85fr);
+  }
+
+  .inline-filter-grid {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+  }
+}
+
+/* Phones and portrait tablets */
+@media (max-width: 760px) {
+  :root {
+    --radius: 18px;
+  }
+
+  body {
+    padding-bottom: calc(84px + env(safe-area-inset-bottom));
+    background:
+      radial-gradient(circle at 15% 0%, rgba(246,185,0,.11), transparent 24%),
+      radial-gradient(circle at 95% 2%, rgba(140,75,255,.17), transparent 24%),
+      linear-gradient(145deg, #0d050e 0%, #1a0916 45%, #11070c 100%);
+  }
+
+  .app-shell {
+    display: block;
+    min-height: 100dvh;
+    padding: 8px;
+  }
+
+  .main-area {
+    gap: 10px;
+  }
+
+  .glass {
+    box-shadow: 0 16px 38px rgba(0,0,0,.28);
+  }
+
+  .topbar {
+    top: 6px;
+    padding: 10px;
+    gap: 9px;
+    border-radius: 17px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .topbar-left,
+  .topbar-right {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .topbar-left {
+    display: grid;
+    grid-template-columns: 42px minmax(0,1fr);
+  }
+
+  #mobileMenuBtn {
+    display: grid;
+    width: 42px;
+    min-width: 42px;
+    height: 44px;
+  }
+
+  .search-wrap {
+    min-width: 0;
+    width: 100%;
+    padding: 0 11px;
+    border-radius: 14px;
+  }
+
+  .search-wrap input {
+    height: 44px;
+    min-width: 0;
+    font-size: .84rem;
+    font-weight: 500;
+  }
+
+  .search-icon {
+    font-size: 1rem;
+  }
+
+  .topbar-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .top-meta,
+  #openChatBtn {
+    display: none;
+  }
+
+  #refreshBtn,
+  #filterBtn {
+    min-height: 42px;
+    padding: 0 12px;
+    border-radius: 13px;
+    font-size: .78rem;
+  }
+
+  .hero-panel {
+    padding: 18px 16px;
+    gap: 15px;
+    border-radius: 18px;
+  }
+
+  .hero-panel h2 {
+    margin: .3rem 0 .55rem;
+    font-size: clamp(1.38rem, 6.2vw, 1.78rem);
+    line-height: 1.25;
+    letter-spacing: -.02em;
+    font-weight: 750;
+  }
+
+  .hero-panel p {
+    font-size: .86rem;
+    line-height: 1.72;
+    color: rgba(255,255,255,.76);
+  }
+
+  .hero-side {
+    min-width: 0;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  .hero-actions,
+  .suggestion-row {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    padding: 2px 1px 5px;
+  }
+
+  .hero-actions::-webkit-scrollbar,
+  .suggestion-row::-webkit-scrollbar,
+  .active-filter-chips::-webkit-scrollbar,
+  .inline-filter-grid::-webkit-scrollbar,
+  .kpi-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .chip-btn,
+  .suggestion-chip {
+    flex: 0 0 auto;
+    min-height: 40px;
+    scroll-snap-align: start;
+    white-space: nowrap;
+    font-size: .78rem;
+  }
+
+  /* KPI cards become a swipeable carousel instead of a very long column. */
+  .kpi-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    padding: 1px 1px 6px;
+  }
+
+  .kpi-card {
+    flex: 0 0 min(78vw, 250px);
+    min-height: 132px;
+    scroll-snap-align: start;
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .kpi-label {
+    font-size: .66rem;
+    line-height: 1.45;
+  }
+
+  .kpi-value {
+    font-size: 1.72rem;
+    margin-top: .42rem;
+  }
+
+  .kpi-sub {
+    font-size: .79rem;
+    line-height: 1.5;
+  }
+
+  /* Main quick filters stay visible and can be swiped horizontally. */
+  .filter-toolbar {
+    display: block;
+    padding: 12px;
+    border-radius: 17px;
+    overflow: hidden;
+  }
+
+  .inline-filter-grid {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    padding-bottom: 7px;
+  }
+
+  .inline-filter {
+    flex: 0 0 min(68vw, 210px);
+    scroll-snap-align: start;
+  }
+
+  .inline-filter select,
+  .chart-controls select {
+    min-height: 44px;
+    font-size: .82rem;
+  }
+
+  .inline-filter-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    padding: 3px 0 0;
+  }
+
+  .ghost-btn.compact {
+    width: 100%;
+    min-height: 42px;
+    font-size: .76rem;
+  }
+
+  .active-filter-chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-top: 10px;
+    scrollbar-width: none;
+  }
+
+  .filter-chip {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    min-height: 38px;
+    font-size: .75rem;
+  }
+
+  .view-panel {
+    gap: 10px;
+  }
+
+  .content-grid {
+    gap: 10px;
+  }
+
+  .card {
+    padding: 15px 13px;
+    border-radius: 18px;
+    overflow: hidden;
+  }
+
+  .card.tall {
+    min-height: 0;
+  }
+
+  .card-head {
+    gap: 10px;
+    margin-bottom: 13px;
+  }
+
+  .card-head h3 {
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .card-subtitle {
+    font-size: .75rem;
+    line-height: 1.55;
+  }
+
+  .eyebrow {
+    font-size: .61rem;
+    letter-spacing: .15em;
+  }
+
+  .ghost-chip {
+    padding: 8px 10px;
+    font-size: .7rem;
+  }
+
+  .chart {
+    min-height: 275px;
+  }
+
+  .chart.chart-lg {
+    min-height: 310px;
+  }
+
+  .apexcharts-canvas,
+  .apexcharts-svg {
+    max-width: 100% !important;
+  }
+
+  .apexcharts-legend {
+    justify-content: flex-start !important;
+    gap: 5px !important;
+  }
+
+  .apexcharts-legend-text {
+    font-size: 10px !important;
+  }
+
+  .apexcharts-yaxis-label,
+  .apexcharts-xaxis-label {
+    font-size: 10px !important;
+  }
+
+  /* Responsive Australia SVG map and a compact, scrollable ranking list. */
+  .au-layout {
+    display: block;
+  }
+
+  .state-map {
+    width: 100%;
+    min-height: 300px;
+  }
+
+  .au-map-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 330px;
+  }
+
+  .au-map-label {
+    font-size: 15px;
+  }
+
+  .au-map-count {
+    font-size: 11px;
+  }
+
+  .map-tooltip {
+    display: none !important;
+  }
+
+  .map-legend {
+    margin: 3px auto 10px;
+    font-size: .65rem;
+  }
+
+  .mini-ranking {
+    max-height: 270px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 2px;
+  }
+
+  .rank-row {
+    padding: 10px 0;
+  }
+
+  .rank-row strong {
+    font-size: .83rem;
+  }
+
+  .rank-row span {
+    font-size: .72rem;
+  }
+
+  /* Industry controls stack neatly and keep the chart readable. */
+  .industry-card-head {
+    display: block;
+  }
+
+  .chart-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .industry-insight-strip {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .industry-insight-item {
+    min-height: 82px;
+  }
+
+  .industry-narrative {
+    font-size: .8rem;
+    line-height: 1.65;
+  }
+
+  /* Full-height mobile drawers with sticky action areas. */
+  .drawer-panel,
+  .right-drawer .drawer-panel {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    max-width: none;
+    transform: none;
+    border-radius: 0;
+    padding:
+      calc(14px + env(safe-area-inset-top))
+      12px
+      calc(14px + env(safe-area-inset-bottom));
+    box-shadow: none;
+  }
+
+  .drawer-head {
+    flex: 0 0 auto;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+
+  .drawer-head h3 {
+    font-size: 1.08rem;
+  }
+
+  .drawer-head p {
+    font-size: .79rem;
+    line-height: 1.55;
+  }
+
+  .drawer-body {
+    padding-bottom: 8px;
+  }
+
+  .filter-grid {
+    gap: 12px;
+  }
+
+  .filter-grid select {
+    min-height: 48px;
+  }
+
+  .drawer-foot {
+    position: sticky;
+    bottom: 0;
+    padding-top: 12px;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: linear-gradient(180deg, rgba(26,9,22,0), rgba(20,8,17,.96) 24%);
+  }
+
+  .chat-panel {
+    gap: 8px;
+  }
+
+  .chat-messages {
+    padding-right: 0;
+    padding-bottom: 5px;
+  }
+
+  .message {
+    padding: 13px;
+    border-radius: 16px;
+  }
+
+  .message.user {
+    max-width: 92%;
+  }
+
+  .message h4 {
+    font-size: .95rem;
+    line-height: 1.45;
+  }
+
+  .message p,
+  .message li,
+  .query-answer {
+    font-size: .82rem !important;
+    line-height: 1.68 !important;
+  }
+
+  .ai-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .ai-chart-card,
+  .ai-metric {
+    padding: 10px;
+  }
+
+  .ai-chart,
+  .query-chart {
+    min-height: 250px;
+    overflow-x: auto;
+  }
+
+  .query-plan-grid {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .query-pill {
+    flex: 0 0 auto;
+  }
+
+  .chat-form {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    margin: 0 -12px calc(-14px - env(safe-area-inset-bottom));
+    padding: 11px 12px calc(11px + env(safe-area-inset-bottom));
+    background:
+      linear-gradient(180deg, rgba(20,8,17,0), rgba(20,8,17,.98) 20%);
+  }
+
+  .chat-form textarea {
+    min-height: 86px;
+    max-height: 150px;
+    font-size: .85rem;
+  }
+
+  .chat-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+  }
+
+  .chat-actions .primary-btn {
+    min-height: 44px;
+    white-space: nowrap;
+  }
+
+  .muted-note {
+    font-size: .7rem;
+    line-height: 1.45;
+  }
+
+  .schema-row {
+    grid-template-columns: 1fr;
+    gap: 7px;
+  }
+
+  .schema-row > div:last-child {
+    text-align: left !important;
+  }
+
+  /* Persistent thumb-friendly navigation. */
+  .mobile-bottom-nav {
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    bottom: calc(7px + env(safe-area-inset-bottom));
+    z-index: 65;
+    display: grid;
+    grid-template-columns: 1fr 1fr 72px 1fr 1fr;
+    align-items: end;
+    min-height: 66px;
+    padding: 7px 7px 6px;
+    border-radius: 20px;
+    background: rgba(29,12,25,.9);
+    border: 1px solid rgba(255,255,255,.12);
+    box-shadow: 0 16px 40px rgba(0,0,0,.42);
+  }
+
+  .mobile-nav-link {
+    min-width: 0;
+    padding: 7px 2px !important;
+    border-radius: 12px !important;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    gap: 3px !important;
+    color: rgba(255,255,255,.56);
+    text-align: center !important;
+    font-size: .59rem !important;
+    line-height: 1.15;
+  }
+
+  .mobile-nav-link .mobile-nav-icon {
+    width: auto;
+    font-size: 1rem;
+    color: inherit;
+  }
+
+  .mobile-nav-link.active {
+    color: #fff;
+    background: rgba(246,185,0,.13) !important;
+    box-shadow: inset 0 0 0 1px rgba(246,185,0,.2) !important;
+  }
+
+  .mobile-ai-button {
+    align-self: center;
+    justify-self: center;
+    width: 58px;
+    height: 58px;
+    margin-top: -24px;
+    border-radius: 19px;
+    background: linear-gradient(145deg, #ffe500, #f6b900);
+    color: #24101a;
+    box-shadow: 0 12px 30px rgba(246,185,0,.38);
+    display: grid;
+    place-items: center;
+    gap: 0;
+    font-weight: 800;
+  }
+
+  .mobile-ai-button > span {
+    font-size: 1.2rem;
+    line-height: 1;
+  }
+
+  .mobile-ai-button small {
+    font-size: .6rem;
+    line-height: 1;
+  }
+}
+
+@media (max-width: 420px) {
+  .hero-panel {
+    padding: 16px 14px;
+  }
+
+  .kpi-card {
+    flex-basis: 84vw;
+  }
+
+  .chart-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-actions .primary-btn {
+    width: 100%;
+  }
+
+  .mobile-bottom-nav {
+    left: 5px;
+    right: 5px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
